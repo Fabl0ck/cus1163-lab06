@@ -341,13 +341,23 @@ After completing the lab, think about these questions:
 
 1. What would happen if you used `notify()` instead of `notifyAll()`? Why might this cause problems?
 
+notifyAll() is used because it wakes up all waiting threads. If we only used notify(), there's a chance we might wake up the wrong thread. For example, the program could wake another producer when the buffer is already full. Then the consumer would stay asleep and the program could get stuck.
+
 2. Why must `wait()` be called inside a `while` loop rather than an `if` statement? What problem does this solve?
+
+wait() should be in a while loop because a thread might wake up even when the condition is not ready. The loop checks the condition again before continuing. This prevents mistakes and makes the program safe from unexpected wake ups.
 
 3. What would happen if the `produce()` method wasn't synchronized? Could two producers add items at the same time?
 
+If these methods are not synchronized more than one thread could change the buffer at the same time. This can cause errors, like taking from an empty buffer or adding too many items. Synchronization protects the shared data so only one thread changes it at a time.
+
 4. What happens if you forget to call `notifyAll()` in the `produce()` method? How would this affect the consumer thread?
 
+If notifyAll() is missing some threads might stay waiting forever. Even when the buffer changes, they would not wake up. This makes the program freeze and never finish.
+
 5. Why does `wait()` release the lock? What would happen if it didn't?
+
+wait() releases the lock so another thread can use the shared buffer. That way the other thread can produce or consume and change the condition. If wait() did not release the lock then there would be no progress that could be made, and the program could get stuck.
 
 #### What You're Really Learning
 
